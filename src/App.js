@@ -21,3 +21,19 @@ function App() {
 }
 
 export default App;
+// Example fetch call with error handling
+export const fetchItineraries = async () => {
+  try {
+    const response = await fetch('https://capstone-server-aa8j.onrender.com/itineraries', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` // Add token if required
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch itineraries');
+    return await response.json();
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error; // Propagate error to component
+  }
+};
