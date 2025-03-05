@@ -8,16 +8,6 @@ import Navbar from "./components/Navbar";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/signup" element={<Signup />} />
-    </Routes>
-  );
-}
-
-
-function App() {
-  return (
     <>
       <Navbar />
       <Routes>
@@ -30,20 +20,21 @@ function App() {
   );
 }
 
-export default App;
-// Example fetch call with error handling
+// API utility function 
 export const fetchItineraries = async () => {
   try {
     const response = await fetch('https://capstone-server-aa8j.onrender.com/itineraries', {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}` // Add token if required
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     });
     if (!response.ok) throw new Error('Failed to fetch itineraries');
     return await response.json();
   } catch (error) {
     console.error('API Error:', error);
-    throw error; // Propagate error to component
+    throw error;
   }
 };
+
+export default App;
