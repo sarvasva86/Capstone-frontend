@@ -15,7 +15,10 @@
       rgba(108, 92, 231, 0.85), 
       rgba(142, 124, 240, 0.95)
     ),
-    url('https://images.unsplash.com/photo-1503220317375-aaad61436b1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    url('background-image: linear-gradient(rgba(108,92,231,0.8), url('https://picsum.photos/id/1018/1920/1080');');
+  border: 2px solid red !important; /* Check element size */
+  min-height: 100vh !important;
+  background-color: #6c5ce7 !important; /* Fallback color */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -23,6 +26,7 @@
   background-blend-mode: multiply;
   position: relative;
   z-index: 1;
+
 }
 .home-hero h1 {
   font-size: 3.5rem;
