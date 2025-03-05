@@ -8,27 +8,37 @@ const Signup = () => {
   const [message, setMessage] = useState("");
 
   const handleSignup = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setMessage("Processing...");
+  
+  try {
+    const response = await axios.post(
+      "https://capstone-server-aa8j.onrender.com/api/auth/signup",
+      { name, email, password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        timeout: 10000 // 10 seconds timeout
+      }
+    );
 
-    try {
-      const response = await axios.post(
-        "https://capstone-server-aa8j.onrender.com/api/signup", 
-        { name, email, password },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      setMessage("Signup successful!"); 
-      // Optional: Redirect user or clear form
-      setName("");
-      setEmail("");
-      setPassword("");
-    } catch (error) {
-      setMessage(
-        error.response?.data?.error || 
-        "Signup failed. Please check your connection."
-      );
+    if (response.data.message === "Signup successful") {
+      setMessage("🎉 Signup successful! Redirecting...");
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
     }
-  };
+  } catch (error) {
+    const errorMessage = error.response?.data?.error || 
+                        error.message || 
+                        "Connection failed";
+    setMessage(`⚠️ Error: ${errorMessage}`);
+    console.error("Signup failed:", error);
+  }
+};
 
   return (
     <div>
