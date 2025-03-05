@@ -5,6 +5,18 @@ import ItineraryPage from "./pages/ItineraryPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Navbar from "./components/Navbar";
+import Home from './components/Home';
+import Signup from './components/Signup';
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/signup" element={<Signup />} />
+    </Routes>
+  );
+}
+
 
 function App() {
   return (
