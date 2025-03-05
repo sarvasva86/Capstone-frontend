@@ -1,14 +1,19 @@
-/* Home Page Specific Styles */
+/* Home Page Styles */
 .home-hero {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #6c5ce7 0%, #8e7cf0 100%);
   padding: 2rem;
   text-align: center;
   color: white;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  background-image: 
+    linear-gradient(135deg, rgba(108,92,231,0.8) 0%, rgba(142,124,240,0.9) 100%),
+    url('https://images.unsplash.com/photo-1503220317375-aaad61436b1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
 }
 
 .home-hero h1 {
@@ -16,7 +21,9 @@
   margin-bottom: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.05em;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 1;
 }
 
 .home-hero p {
@@ -25,6 +32,9 @@
   margin: 0 auto 2.5rem;
   line-height: 1.6;
   opacity: 0.9;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 1;
 }
 
 .cta-button {
@@ -39,6 +49,8 @@
   gap: 0.5rem;
   transition: all 0.3s ease;
   box-shadow: 0 10px 30px rgba(108,92,231,0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .cta-button:hover {
@@ -60,6 +72,7 @@
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
+  text-align: center;
 }
 
 .feature-card:hover {
@@ -71,9 +84,10 @@
   font-size: 2.5rem;
   color: #6c5ce7;
   margin-bottom: 1rem;
+  display: block;
 }
 
-/* Animation */
+/* Animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -89,13 +103,49 @@
   animation: fadeInUp 0.8s ease-out;
 }
 
+/* Gradient Overlay Enhancement */
+.home-hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(108,92,231,0.4) 0%,
+    rgba(142,124,240,0.5) 100%
+  );
+  z-index: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
+  .home-hero {
+    padding: 2rem 1rem;
+  }
+  
   .home-hero h1 {
     font-size: 2.5rem;
   }
   
   .home-hero p {
     font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .features-grid {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .cta-button {
+    width: 100%;
+    justify-content: center;
   }
 }
