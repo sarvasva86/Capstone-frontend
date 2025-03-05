@@ -8,17 +8,25 @@ const Signup = () => {
   const [message, setMessage] = useState("");
 
   const handleSignup = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/auth/register`,
-        { name, email, password }
+        "https://capstone-server-aa8j.onrender.com/api/signup", // Use your actual endpoint
+        { name, email, password },
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      setMessage(response.data.message); // Show success message
+      setMessage("Signup successful!"); 
+      // Optional: Redirect user or clear form
+      setName("");
+      setEmail("");
+      setPassword("");
     } catch (error) {
-      setMessage(error.response?.data?.error || "Signup failed!");
+      setMessage(
+        error.response?.data?.error || 
+        "Signup failed. Please check your connection."
+      );
     }
   };
 
@@ -26,6 +34,7 @@ const Signup = () => {
     <div>
       <h2>Signup</h2>
       <form onSubmit={handleSignup}>
+        {/* Input fields remain the same */}
         <input
           type="text"
           placeholder="Name"
