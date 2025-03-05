@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import ItineraryPage from './pages/ItineraryPage'; // Add this import
 import NotFound from './pages/NotFound';
 
 function App() {
