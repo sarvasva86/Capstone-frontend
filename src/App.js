@@ -5,7 +5,6 @@ import ItineraryPage from "./pages/ItineraryPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Navbar from "./components/Navbar";
-import Signup from './components/Signup';
 
 function App() {
   return (
