@@ -12,7 +12,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        "https://capstone-server-aa8j.onrender.com/api/signup", // Use your actual endpoint
+        "https://capstone-server-aa8j.onrender.com/api/signup", 
         { name, email, password },
         { headers: { "Content-Type": "application/json" } }
       );
