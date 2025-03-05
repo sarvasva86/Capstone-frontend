@@ -1,12 +1,9 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import ItineraryPage from "./pages/ItineraryPage";
-import Login from "./pages/Login";
-import NotFound from './pages/NotFound';
-import Signup from "./pages/Signup";
-import Navbar from "./components/Navbar";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -16,23 +13,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="*" element={<NotFound />} /> {/* Catch-all route */}
+        <Route path="/itineraries" element={<ItineraryPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
-  );
-}
-
-function App() {
-  return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/itinerary" element={<ItineraryPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    </>
   );
 }
 
