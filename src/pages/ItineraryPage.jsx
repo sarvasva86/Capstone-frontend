@@ -1,11 +1,11 @@
-import React from "react";
-import ItineraryList from "../components/ItineraryList";
+
+import React from 'react';
 
 const ItineraryPage = () => {
   return (
-    <div>
-      <h1>Your Itineraries</h1>
-      <ItineraryList />
+    <div className="itinerary-page">
+      <h1>My Travel Itineraries</h1>
+      {/* Add itinerary content here */}
     </div>
   );
 };
