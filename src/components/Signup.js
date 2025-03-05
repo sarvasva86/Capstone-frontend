@@ -7,6 +7,13 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
+
+axios.post(
+  "https://capstone-server-aa8j.onrender.com/api/auth/signup",
+  { name, email, password },
+  { headers: { "Content-Type": "application/json" } } 
+);
+
   const handleSignup = async (e) => {
     e.preventDefault();
     
