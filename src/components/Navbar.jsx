@@ -8,7 +8,7 @@ const Navbar = () => {
       <h1>Virtual Travel Planner</h1>
       <div className="nav-links">
         <Link to="/">Home</Link>
-        <Link to="/itinerary">Itineraries</Link>
+        <Link to="/itinerary"> My Itineraries</Link>
         <Link to="/login">Login</Link>
         <Link to="/signup">Sign Up</Link>
       </div>
