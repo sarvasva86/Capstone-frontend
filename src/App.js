@@ -5,7 +5,9 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import ItineraryPage from './pages/ItineraryPage'; 
 import NotFound from './pages/NotFound';
-import { useEffect, useState } from 'react'; // Add this
+import { useEffect, useState } from 'react'; 
+import CreateItinerary from './pages/CreateItinerary';
+
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/itineraries" element={<ItineraryPage />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/create-itinerary" element={<CreateItinerary />} />
       </Routes>
     </Router>
   );
