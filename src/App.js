@@ -5,6 +5,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import ItineraryPage from './pages/ItineraryPage'; 
 import NotFound from './pages/NotFound';
+import { useEffect, useState } from 'react'; // Add this
 
 function App() {
   return (
@@ -21,10 +22,10 @@ function App() {
   );
 }
 
-// API utility function 
+// Updated API utility function with correct endpoint
 export const fetchItineraries = async () => {
   try {
-    const response = await fetch('https://capstone-server-aa8j.onrender.com/itineraries', {
+    const response = await fetch('https://capstone-server-aa8j.onrender.com/api/itineraries', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
