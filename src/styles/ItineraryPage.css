@@ -45,3 +45,45 @@
   border-radius: 20px;
   font-size: 0.9rem;
 }
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.create-button {
+  background: #6c5ce7;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.create-button:hover {
+  background: #5b4bc4;
+  transform: translateY(-2px);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-top: 2rem;
+}
+
+.empty-state p {
+  margin-bottom: 1.5rem;
+  color: #636e72;
+}
+
+.date-range {
+  color: #636e72;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+
