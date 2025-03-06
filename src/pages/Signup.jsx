@@ -28,7 +28,7 @@ const Signup = () => {
       setMessage("🎉 Signup successful! Redirecting...");
       // Redirect after 2 seconds
       setTimeout(() => {
-        window.location.href = "/login";
+        window.location.href = "/#/login";
       }, 2000);
     }
   } catch (error) {
