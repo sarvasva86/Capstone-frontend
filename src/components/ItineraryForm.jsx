@@ -1,25 +1,64 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-const ItineraryForm = ({ addItinerary }) => {
-  const [destination, setDestination] = useState("");
+const ItineraryForm = ({ onSubmit, initialData = {} }) => {
+  const [formData, setFormData] = useState({
+    title: initialData.title || '',
+    description: initialData.description || '',
+    activities: initialData.activities || [''],
+  });
+
+  const handleActivityChange = (index, value) => {
+    const newActivities = [...formData.activities];
+    newActivities[index] = value;
+    setFormData({ ...formData, activities: newActivities });
+  };
+
+  const addActivity = () => {
+    setFormData({ ...formData, activities: [...formData.activities, ''] });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (destination.trim()) {
-      addItinerary(destination);
-      setDestination("");
-    }
+    onSubmit(formData);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Enter destination"
-        value={destination}
-        onChange={(e) => setDestination(e.target.value)}
-      />
-      <button type="submit">Add</button>
+      <div className="form-group">
+        <label>Title:</label>
+        <input
+          type="text"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          required
+        />
+      </div>
+      
+      <div className="form-group">
+        <label>Description:</label>
+        <textarea
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Activities:</label>
+        {formData.activities.map((activity, index) => (
+          <input
+            key={index}
+            type="text"
+            value={activity}
+            onChange={(e) => handleActivityChange(index, e.target.value)}
+            required
+          />
+        ))}
+        <button type="button" onClick={addActivity}>
+          Add Activity
+        </button>
+      </div>
+
+      <button type="submit">Submit</button>
     </form>
   );
 };
