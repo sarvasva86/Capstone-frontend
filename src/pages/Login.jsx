@@ -1,31 +1,81 @@
+
 import React, { useState } from "react";
 import axios from "axios";
-import "../styles/Login.css"; // Import CSS file
+import { useNavigate } from "react-router-dom";
+import "../styles/Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setMessage("Logging in...");
+
     try {
-      const response = await axios.post( "https://capstone-server-aa8j.onrender.com/auth/login", { email, password });
+      const response = await axios.post(
+        "https://capstone-server-aa8j.onrender.com/api/auth/login",
+        { email, password },
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
       localStorage.setItem("token", response.data.token);
-      alert("Login Successful!");
+      setMessage("🎉 Login successful! Redirecting...");
+      
+      // Redirect to dashboard/home after 2 seconds
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+
     } catch (error) {
-      console.error("Login Error:", error.response?.data || error.message);
-      alert(`Login Failed! ${error.response?.data?.error || "Unknown error"}`);
+      const errorMessage = error.response?.data?.error || 
+                          "Failed to connect to server";
+      setMessage(`⚠️ Error: ${errorMessage}`);
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleLogin}>Login</button>
+    <div className="auth-container">
+      <h2>Welcome Back!</h2>
+      <form onSubmit={handleLogin}>
+        <div className="form-group">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <button type="submit" className="auth-button">
+          Login
+        </button>
+      </form>
+
+      {message && <div className="auth-message">{message}</div>}
+
+      <p className="auth-link">
+        New user? <a href="/signup">Create account</a>
+      </p>
     </div>
   );
 };
 
 export default Login;
-
