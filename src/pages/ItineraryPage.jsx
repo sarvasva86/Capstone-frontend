@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchItineraries } from '../App';
 import '../styles/ItineraryPage.css';
 
@@ -27,14 +28,22 @@ const ItineraryPage = () => {
 
   return (
     <div className="itinerary-page">
-      <h1>My Travel Itineraries</h1>
-      
+      <div className="header-section">
+        <h1>My Travel Itineraries</h1>
+        <Link to="/create-itinerary" className="create-button">
+          ＋ Create New Itinerary
+        </Link>
+      </div>
+
       <div className="itinerary-list">
         {itineraries.length > 0 ? (
           itineraries.map(itinerary => (
             <div key={itinerary._id} className="itinerary-card">
               <h3>{itinerary.title}</h3>
-              <p>{new Date(itinerary.date).toLocaleDateString()}</p>
+              <div className="date-range">
+                {new Date(itinerary.startDate).toLocaleDateString()} - 
+                {new Date(itinerary.endDate).toLocaleDateString()}
+              </div>
               <div className="activities">
                 {itinerary.activities.map((activity, index) => (
                   <span key={index} className="activity-tag">
@@ -45,7 +54,12 @@ const ItineraryPage = () => {
             </div>
           ))
         ) : (
-          <p>No itineraries found. Start by creating one!</p>
+          <div className="empty-state">
+            <p>No itineraries found. Let's plan your next adventure!</p>
+            <Link to="/create-itinerary" className="create-button">
+              Create Your First Itinerary
+            </Link>
+          </div>
         )}
       </div>
     </div>
