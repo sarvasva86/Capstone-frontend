@@ -20,6 +20,7 @@ function App() {
         <Route path="/itineraries" element={<ItineraryPage />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/create-itinerary" element={<CreateItinerary />} />
+        <Route path="/create" element={<CreateItinerary />} />
       </Routes>
     </Router>
   );
