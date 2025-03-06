@@ -23,7 +23,7 @@ function App() {
 }
 
 // Updated API utility function with correct endpoint
-export const fetchItineraries = async () => {
+const fetchItineraries = async () => {
   try {
     const response = await fetch('https://capstone-server-aa8j.onrender.com/api/itineraries', {
       headers: {
