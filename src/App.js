@@ -5,7 +5,6 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import ItineraryPage from './pages/ItineraryPage'; 
 import NotFound from './pages/NotFound';
-<Route path="*" element={<Navigate to="/" replace />} />
 
 function App() {
   return (
