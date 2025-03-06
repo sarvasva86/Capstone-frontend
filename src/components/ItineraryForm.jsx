@@ -57,6 +57,9 @@ const ItineraryForm = ({ onSubmit, initialData = {} }) => {
           Add Activity
         </button>
       </div>
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Submitting...' : 'Submit'}
+      </button>
 
       <button type="submit">Submit</button>
     </form>
