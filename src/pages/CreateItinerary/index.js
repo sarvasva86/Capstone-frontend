@@ -54,3 +54,4 @@ const CreateItinerary = () => {
     </div>
   );
 };
+export default CreateItinerary;
