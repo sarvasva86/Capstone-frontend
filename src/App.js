@@ -39,4 +39,5 @@ export const fetchItineraries = async () => {
   }
 };
 
-export default App;
+export { fetchItineraries }; // Named export
+export default App; // Default export
