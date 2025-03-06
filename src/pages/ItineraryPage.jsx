@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchItineraries } from './App';
+import { fetchItineraries } from '../App';
 import '../styles/ItineraryPage.css';
 
 const ItineraryPage = () => {
