@@ -31,30 +31,26 @@ const Signup = () => {
           window.location.href = "/login"; // Use your actual login route
         }, 2000);
       }
-    } catch (error) {
-      let errorMessage = "Signup failed. Please try again.";
-      
-      if (error.response) {
-        // Server responded with error status
-        errorMessage = error.response.data.error || 
-                      error.response.data.message || 
-                      `Server error (${error.response.status})`;
-      } else if (error.request) {
-        // Request was made but no response received
-        errorMessage = "No response from server. Check your connection.";
-      } else {
-        // Other errors
-        errorMessage = error.message || "Failed to process request";
-      }
+    } 
+    catch (error) {
+  let errorMessage = "Signup failed. Please try again.";
+  
+  if (error.code === "ECONNABORTED") {
+    errorMessage = "Request timed out. Check your connection.";
+  } else if (error.request) {
+    errorMessage = "No response from server. The backend might be down.";
+  } else {
+    errorMessage = `Network Error: ${error.message}`;
+  }
 
-      setMessage(`⚠️ ${errorMessage}`);
-      console.error("Signup Error Details:", {
-        config: error.config,
-        response: error.response?.data
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  setMessage(`⚠️ ${errorMessage}`);
+  console.error("Full Error Context:", {
+    config: error.config,
+    request: error.request,
+    code: error.code,
+    message: error.message
+  });
+}
   };
 
   return (
