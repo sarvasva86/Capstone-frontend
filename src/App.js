@@ -7,7 +7,7 @@ import ItineraryPage from './pages/ItineraryPage';
 import NotFound from './pages/NotFound';
 import { useEffect, useState } from 'react'; 
 import CreateItinerary from './pages/CreateItinerary';
-import { fetchItineraries } from '../api/itinerary';
+import { fetchItineraries } from './api/itinerary';
 
 
 
@@ -27,23 +27,4 @@ function App() {
     </Router>
   );
 }
-
-// Updated API utility function with correct endpoint
-const fetchItineraries = async () => {
-  try {
-    const response = await fetch('https://capstone-server-aa8j.onrender.com/api/itineraries', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Failed to fetch itineraries');
-    return await response.json();
-  } catch (error) {
-    console.error('API Error:', error);
-    throw error;
-  }
-};
-
-export { fetchItineraries }; // Named export
 export default App; // Default export
