@@ -16,24 +16,32 @@ const ItineraryPage = () => {
       setLoading(true);
       setError(null);
       
+      // Verify authentication state
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication required. Please login again.');
+      }
+
       const data = await fetchItineraries();
       setItineraries(data);
       
-      // Clear refresh state if coming from creation
+      // Clear refresh state
       if (location.state?.shouldRefresh) {
         navigate(location.pathname, { replace: true, state: {} });
       }
     } catch (err) {
-      console.error('Fetch error details:', {
+      console.error('Error details:', {
         message: err.message,
+        code: err.code,
         stack: err.stack
       });
-      setError(err.message);
       
-      // Auto-retry logic (3 attempts)
-      if (retryCount < 3) {
-        setTimeout(() => setRetryCount(c => c + 1), 2000);
-      }
+      // Enhanced error messages
+      const friendlyError = err.message.includes('Failed to fetch') 
+        ? 'Connection to server failed. Check your internet connection.'
+        : err.message;
+      
+      setError(friendlyError);
     } finally {
       setLoading(false);
     }
