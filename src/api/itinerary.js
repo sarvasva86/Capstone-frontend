@@ -1,22 +1,29 @@
-const API_BASE = process.env.REACT_APP_API_BASE;
-
 export const fetchItineraries = async () => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_BASE}/api/itineraries`);
+    const token = localStorage.getItem('token');
     
-    if (!response.ok) throw new Error('Failed to fetch');
-    
-    const data = await response.json();
-    
-    // Convert ISO date strings to Date objects
-    return data.map(it => ({
-      ...it,
-      startDate: new Date(it.startDate),
-      endDate: new Date(it.endDate),
-      createdAt: new Date(it.createdAt)
-    }));
-    
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE}/api/itineraries`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      // Handle specific HTTP errors
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.reload(); // Force re-authentication
+      }
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    return await response.json();
   } catch (error) {
-    throw new Error(error.message);
+    console.error('API Error:', error);
+    throw new Error(error.message || 'Failed to connect to server');
   }
 };
