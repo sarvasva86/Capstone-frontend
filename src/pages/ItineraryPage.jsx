@@ -4,10 +4,12 @@ import { fetchItineraries } from '../api/itinerary';
 import '../styles/ItineraryPage.css';
 
 const ItineraryPage = () => {
+  // State declarations must be inside the component
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // useEffect must be inside the component
   useEffect(() => {
     const loadItineraries = async () => {
       try {
@@ -21,7 +23,7 @@ const ItineraryPage = () => {
     };
     
     loadItineraries();
-  }, []);
+  }, []); // Empty dependency array = runs once on mount
 
   if (loading) return <div className="loading">Loading itineraries...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -65,22 +67,5 @@ const ItineraryPage = () => {
     </div>
   );
 };
-
-// error handling
-useEffect(() => {
-  const loadItineraries = async () => {
-    try {
-      const data = await fetchItineraries();
-      setItineraries(data);
-    } catch (err) {
-      setError(err.message);
-      console.error('Fetch error:', err);  // Add logging
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  loadItineraries();
-}, []);
 
 export default ItineraryPage;
