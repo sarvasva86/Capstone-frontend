@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { fetchItineraries } from '../api/itinerary';
 import '../styles/ItineraryPage.css';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 const ItineraryPage = () => {
+  const [itineraries, setItineraries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadItineraries = async () => {
       try {
         const data = await fetchItineraries();
         setItineraries(data);
         
-        // Clear refresh state after loading
         if (location.state?.shouldRefresh) {
           navigate(location.pathname, { replace: true, state: {} });
         }
@@ -24,32 +25,9 @@ const ItineraryPage = () => {
         setLoading(false);
       }
     };
-
-    loadData();
-  }, [location.state?.shouldRefresh]); // Add this dependency
-};
-
-const ItineraryPage = () => {
-  // State declarations must be inside the component
-  const [itineraries, setItineraries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // useEffect must be inside the component
-  useEffect(() => {
-    const loadItineraries = async () => {
-      try {
-        const data = await fetchItineraries();
-        setItineraries(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     
     loadItineraries();
-  }, []); // Empty dependency array = runs once on mount
+  }, [location.state?.shouldRefresh]);
 
   if (loading) return <div className="loading">Loading itineraries...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -94,4 +72,5 @@ const ItineraryPage = () => {
   );
 };
 
+// Only ONE export default statement
 export default ItineraryPage;
