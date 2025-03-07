@@ -66,4 +66,21 @@ const ItineraryPage = () => {
   );
 };
 
+// error handling
+useEffect(() => {
+  const loadItineraries = async () => {
+    try {
+      const data = await fetchItineraries();
+      setItineraries(data);
+    } catch (err) {
+      setError(err.message);
+      console.error('Fetch error:', err);  // Add logging
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  loadItineraries();
+}, []);
+
 export default ItineraryPage;
