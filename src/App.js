@@ -7,6 +7,8 @@ import ItineraryPage from './pages/ItineraryPage';
 import NotFound from './pages/NotFound';
 import { useEffect, useState } from 'react'; 
 import CreateItinerary from './pages/CreateItinerary';
+import { fetchItineraries } from '../api/itinerary';
+
 
 
 function App() {
