@@ -12,28 +12,26 @@ const CreateItinerary = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/itineraries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE}/api/itineraries`, // Use environment variable
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      // Handle non-successful responses
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create itinerary');
+      }
+
+      // Redirect to itineraries page with refresh flag
+      navigate('/itineraries', {
+        state: { shouldRefresh: true },
       });
 
-      // Handle network errors
-      if (!response) {
-        throw new Error('Network error - no response from server');
-      }
-
-      // Handle non-JSON responses
-      const contentType = response.headers.get('content-type');
-      const isJson = contentType?.includes('application/json');
-
-      const data = isJson ? await response.json() : null;
-
-      if (!response.ok) {
-        throw new Error(data?.error || `HTTP error! status: ${response.status}`);
-      }
-
-      navigate('/');
     } catch (error) {
       console.error('Submission failed:', error);
       setError(error.message || 'Failed to create itinerary. Please try again.');
