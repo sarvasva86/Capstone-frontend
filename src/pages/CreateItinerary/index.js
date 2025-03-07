@@ -12,29 +12,44 @@ const CreateItinerary = () => {
     setError(null);
 
     try {
+      // Ensure dates are properly formatted
+      const payload = {
+        ...formData,
+        startDate: formData.startDate || new Date().toISOString(),
+        endDate: formData.endDate || new Date().toISOString()
+      };
+
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE}/api/itineraries`, // Use environment variable
+        `${process.env.REACT_APP_API_BASE}/api/itineraries`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
-      // Handle non-successful responses
+      // Handle non-JSON responses first
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create itinerary');
+        console.error('Server response error:', {
+          status: response.status,
+          data
+        });
+        throw new Error(data.error || `Server error (${response.status})`);
       }
 
-      // Redirect to itineraries page with refresh flag
       navigate('/itineraries', {
-        state: { shouldRefresh: true },
+        state: { shouldRefresh: true }
       });
 
     } catch (error) {
-      console.error('Submission failed:', error);
-      setError(error.message || 'Failed to create itinerary. Please try again.');
+      console.error('Full submission error:', {
+        message: error.message,
+        stack: error.stack
+      });
+      setError(error.message || 'Failed to save itinerary. Please check your data and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -47,15 +62,7 @@ const CreateItinerary = () => {
       {error && (
         <div className="error-alert">
           ⚠️ {error}
+          <br />
+          <small>Check console for more details</small>
         </div>
-      )}
-
-      <ItineraryForm 
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
-    </div>
-  );
-};
-
-export default CreateItinerary;
+      )
