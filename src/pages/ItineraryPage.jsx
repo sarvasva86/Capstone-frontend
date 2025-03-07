@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchItineraries } from '../App';
+import { fetchItineraries } from '../api/itinerary';
 import '../styles/ItineraryPage.css';
 
 const ItineraryPage = () => {
