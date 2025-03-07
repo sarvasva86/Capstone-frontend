@@ -12,7 +12,6 @@ const CreateItinerary = () => {
     setError(null);
 
     try {
-      // Ensure dates are properly formatted
       const payload = {
         ...formData,
         startDate: formData.startDate || new Date().toISOString(),
@@ -24,36 +23,27 @@ const CreateItinerary = () => {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(payload)
         }
       );
 
-      // Handle non-JSON responses first
       const text = await response.text();
       const data = text ? JSON.parse(text) : {};
 
       if (!response.ok) {
-        console.error('Server response error:', {
-          status: response.status,
-          data
-        });
+        console.error('Server response:', { status: response.status, data });
         throw new Error(data.error || `Server error (${response.status})`);
       }
 
-      navigate('/itineraries', {
-        state: { shouldRefresh: true }
-      });
+      navigate('/itineraries', { state: { shouldRefresh: true } });
 
     } catch (error) {
-      console.error('Full submission error:', {
-        message: error.message,
-        stack: error.stack
-      });
-      setError(error.message || 'Failed to save itinerary. Please check your data and try again.');
+      console.error('Submission error:', error);
+      setError(error.message || 'Failed to create itinerary. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }; // <-- Closing brace for handleSubmit
 
   return (
     <div className="page-container">
@@ -63,6 +53,16 @@ const CreateItinerary = () => {
         <div className="error-alert">
           ⚠️ {error}
           <br />
-          <small>Check console for more details</small>
+          <small>Check console for details</small>
         </div>
-      )
+      )}
+
+      <ItineraryForm 
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
+    </div>
+  );
+}; // <-- Closing brace for component
+
+export default CreateItinerary;
