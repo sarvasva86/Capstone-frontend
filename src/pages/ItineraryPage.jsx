@@ -2,6 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchItineraries } from '../api/itinerary';
 import '../styles/ItineraryPage.css';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+const ItineraryPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await fetchItineraries();
+        setItineraries(data);
+        
+        // Clear refresh state after loading
+        if (location.state?.shouldRefresh) {
+          navigate(location.pathname, { replace: true, state: {} });
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [location.state?.shouldRefresh]); // Add this dependency
+};
 
 const ItineraryPage = () => {
   // State declarations must be inside the component
