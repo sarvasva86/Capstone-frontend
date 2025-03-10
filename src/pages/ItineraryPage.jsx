@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { fetchItineraries } from '../api/itinerary';
 import '../styles/ItineraryPage.css';
+import { useItinerary } from '../contexts/ItineraryContext';
 
 const ItineraryPage = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -9,7 +10,9 @@ const ItineraryPage = () => {
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const location = useLocation();
-  const navigate = useNavigate();
+  const navigate = use Navigate();
+  const { data, loading, error, fetchItineraries } = useItinerary();
+  
 
   const loadItineraries = async () => {
     try {
@@ -46,6 +49,23 @@ const ItineraryPage = () => {
       setLoading(false);
     }
   };
+
+ useEffect(() => {
+    fetchItineraries(1); // Initial load
+  }, []);
+
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorAlert message={error} />;
+
+  return (
+    <div>
+      {data.map(itinerary => (
+        <ItineraryCard key={itinerary._id} {...itinerary} />
+      ))}
+    </div>
+  );
+};
+  
 
   useEffect(() => {
     loadItineraries();
