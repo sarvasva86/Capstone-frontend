@@ -10,7 +10,7 @@ const ItineraryPage = () => {
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const location = useLocation();
-  const navigate = use Navigate();
+  const navigate = useNavigate();
   const { data, loading, error, fetchItineraries } = useItinerary();
   
 
