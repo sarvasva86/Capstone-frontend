@@ -10,9 +10,8 @@ const ItineraryPage = () => {
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const location = useLocation();
-  const navigate = useNavigate();
-  const { data, loading, error, fetchItineraries } = useItinerary();
-  
+  const navigate = useNavigate(); 
+  const { data, loading: contextLoading, error: contextError, fetchItineraries } = useItinerary(); 
 
   const loadItineraries = async () => {
     try {
@@ -50,22 +49,9 @@ const ItineraryPage = () => {
     }
   };
 
- useEffect(() => {
+  useEffect(() => {
     fetchItineraries(1); // Initial load
   }, []);
-
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorAlert message={error} />;
-
-  return (
-    <div>
-      {data.map(itinerary => (
-        <ItineraryCard key={itinerary._id} {...itinerary} />
-      ))}
-    </div>
-  );
-};
-  
 
   useEffect(() => {
     loadItineraries();
@@ -83,7 +69,7 @@ const ItineraryPage = () => {
     }
   };
 
-  if (loading) {
+  if (loading || contextLoading) { // ✅ Now using contextLoading
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
@@ -92,11 +78,11 @@ const ItineraryPage = () => {
     );
   }
 
-  if (error) {
+  if (error || contextError) { // ✅ Now using contextError
     return (
       <div className="error-container">
         <h2>⚠️ Connection Issue</h2>
-        <p>{error}</p>
+        <p>{error || contextError}</p>
         <button 
           onClick={() => setRetryCount(0)}
           className="retry-button"
