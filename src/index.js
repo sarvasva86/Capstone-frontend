@@ -8,7 +8,9 @@ import { ItineraryProvider } from './contexts/ItineraryContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <ItineraryProvider> {/* ✅ Wrap your app inside the provider */}
+      <App />
+    </ItineraryProvider>
   </React.StrictMode>
 );
 
