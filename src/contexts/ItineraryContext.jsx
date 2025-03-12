@@ -19,29 +19,30 @@ export const ItineraryProvider = ({ children }) => {
 
   // 📌 Fetch Itineraries Function
   const fetchItineraries = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token"); // Ensure user is authenticated
-      if (!token) {
-        throw new Error("Unauthorized: Please log in to view itineraries.");
-      }
-
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/itineraries`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch itineraries.");
-      }
-
-      const result = await response.json();
-      setData(result);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("token"); // ✅ Retrieve token from localStorage
+    if (!token) {
+      throw new Error("Unauthorized: Please log in.");
     }
-  };
+
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/itineraries`, {
+      headers: { Authorization: `Bearer ${token}` }, // ✅ Include token in request
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch itineraries. Please log in again.");
+    }
+
+    const result = await response.json();
+    setData(result);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // 📌 Auto-fetch itineraries on mount
   useEffect(() => {
