@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-const ItineraryContext = createContext(); // ✅ Create Context
+const ItineraryContext = createContext();
 
-// 🚀 Custom Hook to Use Itinerary Context
 export const useItinerary = () => {
   const context = useContext(ItineraryContext);
   if (!context) {
@@ -11,46 +10,94 @@ export const useItinerary = () => {
   return context;
 };
 
-// ✅ ItineraryProvider Component
 export const ItineraryProvider = ({ children }) => {
-  const [data, setData] = useState([]); // Stores itineraries
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [state, setState] = useState({
+    data: [],
+    loading: false,
+    error: null,
+    lastFetched: null
+  });
 
-  // 📌 Fetch Itineraries Function
-  const fetchItineraries = async () => {
-  setLoading(true);
-  try {
-    const token = localStorage.getItem("token"); // ✅ Retrieve token from localStorage
-    if (!token) {
-      throw new Error("Unauthorized: Please log in.");
+  const handleError = (error) => {
+    console.error("Itinerary Context Error:", error);
+    setState(prev => ({
+      ...prev,
+      error: error.message,
+      loading: false
+    }));
+    
+    // Auto-logout on 401 Unauthorized
+    if (error.message.includes("401")) {
+      localStorage.removeItem("token");
+      window.location.href = "/login?session_expired=true";
     }
+  };
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/itineraries`, {
-      headers: { Authorization: `Bearer ${token}` }, // ✅ Include token in request
-    });
+  const fetchItineraries = async (forceRefresh = false) => {
+    try {
+      setState(prev => ({ ...prev, loading: true, error: null }));
+      
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("401 - Authentication required");
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch itineraries. Please log in again.");
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/itineraries`, 
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            "X-Request-ID": crypto.randomUUID() 
+          },
+          cache: forceRefresh ? "reload" : "default"
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `HTTP ${response.status} - ${response.statusText}`
+        );
+      }
+
+      const result = await response.json();
+      
+      setState({
+        data: result,
+        loading: false,
+        error: null,
+        lastFetched: new Date().toISOString()
+      });
+
+    } catch (err) {
+      handleError(err);
     }
+  };
 
-    const result = await response.json();
-    setData(result);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  // Add automatic refresh every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (state.lastFetched) {
+        const minutesSinceLastFetch = 
+          (new Date() - new Date(state.lastFetched)) / 60000;
+        if (minutesSinceLastFetch > 5) {
+          fetchItineraries(true);
+        }
+      }
+    }, 60000);
 
+    return () => clearInterval(interval);
+  }, [state.lastFetched]);
 
-  // 📌 Auto-fetch itineraries on mount
+  // Initial fetch
   useEffect(() => {
     fetchItineraries();
   }, []);
 
   return (
-    <ItineraryContext.Provider value={{ data, loading, error, fetchItineraries }}>
+    <ItineraryContext.Provider value={{
+      ...state,
+      fetchItineraries,
+      retry: () => fetchItineraries(true)
+    }}>
       {children}
     </ItineraryContext.Provider>
   );
