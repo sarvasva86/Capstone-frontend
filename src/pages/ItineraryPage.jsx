@@ -8,56 +8,38 @@ const ItineraryPage = () => {
   const [itineraries, setItineraries] = useState([]); // ✅ Ensuring initial state is an empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
   const location = useLocation();
-  const navigate = useNavigate(); 
-  const { data, loading: contextLoading, error: contextError, fetchItineraries } = useItinerary(); 
+  const navigate = useNavigate();
+  const { data, loading: contextLoading, error: contextError, fetchItineraries } = useItinerary();
 
   const loadItineraries = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // Verify authentication state
+
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('Authentication required. Please login again.');
       }
 
-      const data = await fetchItineraries();
-      
-      // ✅ Ensure data is always an array to prevent errors
-      setItineraries(Array.isArray(data) ? data : []);
+      const fetchedData = await fetchItineraries();
+      setItineraries(Array.isArray(fetchedData) ? fetchedData : []);
 
-      // Clear refresh state
+      // ✅ Reset refresh state
       if (location.state?.shouldRefresh) {
         navigate(location.pathname, { replace: true, state: {} });
       }
     } catch (err) {
-      console.error('Error details:', {
-        message: err.message,
-        code: err.code,
-        stack: err.stack
-      });
-      
-      // Enhanced error messages
-      const friendlyError = err.message.includes('Failed to fetch') 
-        ? 'Connection to server failed. Check your internet connection.'
-        : err.message;
-      
-      setError(friendlyError);
+      console.error('Error fetching itineraries:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchItineraries(1); // Initial load
-  }, []);
-
-  useEffect(() => {
     loadItineraries();
-  }, [retryCount, location.state?.shouldRefresh]);
+  }, [location.state?.shouldRefresh]); // ✅ Refresh after itinerary is saved
 
   const formatDate = (dateString) => {
     try {
@@ -86,7 +68,7 @@ const ItineraryPage = () => {
         <h2>⚠️ Connection Issue</h2>
         <p>{error || contextError}</p>
         <button 
-          onClick={() => setRetryCount(retryCount + 1)}
+          onClick={() => loadItineraries()} // ✅ Retry fetch
           className="retry-button"
         >
           Retry
