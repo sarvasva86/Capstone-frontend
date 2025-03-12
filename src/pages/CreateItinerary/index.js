@@ -13,6 +13,9 @@ const CreateItinerary = () => {
     setError(null);
 
     try {
+      if (!formData.title?.trim()) {
+      throw new Error("Title is required");
+    }
       const token = localStorage.getItem("token"); // ✅ Retrieve auth token
       if (!token) {
         throw new Error("Unauthorized: Please log in first.");
@@ -20,9 +23,15 @@ const CreateItinerary = () => {
 
       const payload = {
         ...formData,
+        title: formData.title.trim(), 
+        activities: formData.activities,
         startDate: formData.startDate || new Date().toISOString(),
         endDate: formData.endDate || new Date().toISOString(),
       };
+
+      // Log the payload for verification
+    console.log("Submission payload:", payload);
+
 
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE}/api/itineraries`,
@@ -35,7 +44,27 @@ const CreateItinerary = () => {
           body: JSON.stringify(payload),
         }
       );
+      // Handle non-JSON responses
+    const responseData = await response.json().catch(() => ({}));
+    
+    if (!response.ok) {
+      throw new Error(responseData.message || `Server error: ${response.status}`);
+    }
 
+      // Verify response contains title
+    console.log("Created itinerary:", {
+      id: responseData._id,
+      title: responseData.title // Check this exists
+    });
+
+    navigate("/itineraries", { 
+      state: { 
+        shouldRefresh: true,
+        newItinerary: responseData // Pass created data
+      } 
+    });
+      
+      
       const text = await response.text();
       const data = text ? JSON.parse(text) : {};
 
