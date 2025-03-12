@@ -1,45 +1,21 @@
-import React, { useEffect, useState } from 'react';
+
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { fetchItineraries } from '../api/itinerary';
-import '../styles/ItineraryPage.css';
 import { useItinerary } from '../contexts/ItineraryContext';
+import '../styles/ItineraryPage.css';
 
 const ItineraryPage = () => {
-  const [itineraries, setItineraries] = useState([]); // ✅ Ensuring initial state is an empty array
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const location = useLocation();
   const navigate = useNavigate();
-  const { data, loading: contextLoading, error: contextError, fetchItineraries } = useItinerary();
+  const location = useLocation();
+  const { data, loading, error, fetchItineraries } = useItinerary();
 
-  const loadItineraries = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Authentication required. Please login again.');
-      }
-
-      const fetchedData = await fetchItineraries();
-      setItineraries(Array.isArray(fetchedData) ? fetchedData : []);
-
-      // ✅ Reset refresh state
-      if (location.state?.shouldRefresh) {
-        navigate(location.pathname, { replace: true, state: {} });
-      }
-    } catch (err) {
-      console.error('Error fetching itineraries:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  // Handle refresh after creation/update
+  React.useEffect(() => {
+    if (location.state?.shouldRefresh) {
+      fetchItineraries();
+      navigate(location.pathname, { replace: true, state: {} });
     }
-  };
-
-  useEffect(() => {
-    loadItineraries();
-  }, [location.state?.shouldRefresh]); // ✅ Refresh after itinerary is saved
+  }, [location.state]);
 
   const formatDate = (dateString) => {
     try {
@@ -53,7 +29,7 @@ const ItineraryPage = () => {
     }
   };
 
-  if (loading || contextLoading) { // ✅ Now using contextLoading
+  if (loading) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
@@ -62,13 +38,13 @@ const ItineraryPage = () => {
     );
   }
 
-  if (error || contextError) { // ✅ Now using contextError
+  if (error) {
     return (
       <div className="error-container">
         <h2>⚠️ Connection Issue</h2>
-        <p>{error || contextError}</p>
+        <p>{error}</p>
         <button 
-          onClick={() => loadItineraries()} // ✅ Retry fetch
+          onClick={fetchItineraries}
           className="retry-button"
         >
           Retry
@@ -87,9 +63,8 @@ const ItineraryPage = () => {
       </div>
 
       <div className="itinerary-list">
-        {/* ✅ Ensuring that itineraries is an array before using .length */}
-        {Array.isArray(itineraries) && itineraries.length > 0 ? (
-          itineraries.map((itinerary) => (
+        {data.length > 0 ? (
+          data.map((itinerary) => (
             <div key={itinerary._id} className="itinerary-card">
               <h3>{itinerary.title || 'Untitled Itinerary'}</h3>
               
@@ -102,8 +77,7 @@ const ItineraryPage = () => {
               )}
 
               <div className="activities-container">
-                {/* ✅ Ensuring activities is an array before mapping */}
-                {(Array.isArray(itinerary.activities) ? itinerary.activities : []).map((activity, index) => (
+                {(itinerary.activities || []).map((activity, index) => (
                   <span key={index} className="activity-tag">
                     {activity || 'Unknown Activity'}
                   </span>
