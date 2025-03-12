@@ -5,7 +5,7 @@ import '../styles/ItineraryPage.css';
 import { useItinerary } from '../contexts/ItineraryContext';
 
 const ItineraryPage = () => {
-  const [itineraries, setItineraries] = useState([]);
+  const [itineraries, setItineraries] = useState([]); // ✅ Ensuring initial state is an empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -25,8 +25,10 @@ const ItineraryPage = () => {
       }
 
       const data = await fetchItineraries();
-      setItineraries(data);
       
+      // ✅ Ensure data is always an array to prevent errors
+      setItineraries(Array.isArray(data) ? data : []);
+
       // Clear refresh state
       if (location.state?.shouldRefresh) {
         navigate(location.pathname, { replace: true, state: {} });
@@ -84,7 +86,7 @@ const ItineraryPage = () => {
         <h2>⚠️ Connection Issue</h2>
         <p>{error || contextError}</p>
         <button 
-          onClick={() => setRetryCount(0)}
+          onClick={() => setRetryCount(retryCount + 1)}
           className="retry-button"
         >
           Retry
@@ -103,7 +105,8 @@ const ItineraryPage = () => {
       </div>
 
       <div className="itinerary-list">
-        {itineraries.length > 0 ? (
+        {/* ✅ Ensuring that itineraries is an array before using .length */}
+        {Array.isArray(itineraries) && itineraries.length > 0 ? (
           itineraries.map((itinerary) => (
             <div key={itinerary._id} className="itinerary-card">
               <h3>{itinerary.title || 'Untitled Itinerary'}</h3>
@@ -117,7 +120,8 @@ const ItineraryPage = () => {
               )}
 
               <div className="activities-container">
-                {(itinerary.activities || []).map((activity, index) => (
+                {/* ✅ Ensuring activities is an array before mapping */}
+                {(Array.isArray(itinerary.activities) ? itinerary.activities : []).map((activity, index) => (
                   <span key={index} className="activity-tag">
                     {activity || 'Unknown Activity'}
                   </span>
