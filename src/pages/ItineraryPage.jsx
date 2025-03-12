@@ -1,38 +1,48 @@
-
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useItinerary } from '../contexts/ItineraryContext';
-import '../styles/ItineraryPage.css';
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useItinerary } from "../contexts/ItineraryContext";
+import "../styles/ItineraryPage.css";
 
 const ItineraryPage = () => {
-  const navigate = useNavigate();
+  const [itineraries, setItineraries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const location = useLocation();
-  const { data, loading, error, fetchItineraries } = useItinerary();
+  const navigate = useNavigate();
+  const { fetchItineraries } = useItinerary();
 
-  // Handle refresh after creation/update
-  React.useEffect(() => {
-    if (location.state?.shouldRefresh) {
-      fetchItineraries();
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location.state]);
-
-  const formatDate = (dateString) => {
+  const loadItineraries = async () => {
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch {
-      return 'Invalid date';
+      setLoading(true);
+      setError(null);
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Authentication required. Please log in again.");
+      }
+
+      const fetchedData = await fetchItineraries();
+      setItineraries(Array.isArray(fetchedData) ? fetchedData : []);
+
+      // ✅ Reset refresh state after saving
+      if (location.state?.shouldRefresh) {
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    } catch (err) {
+      console.error("Error fetching itineraries:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadItineraries();
+  }, [location.state?.shouldRefresh]); // ✅ Triggers refresh after saving an itinerary
 
   if (loading) {
     return (
       <div className="loading-container">
-        <div className="loading-spinner"></div>
         <p>Loading your travel plans...</p>
       </div>
     );
@@ -43,10 +53,7 @@ const ItineraryPage = () => {
       <div className="error-container">
         <h2>⚠️ Connection Issue</h2>
         <p>{error}</p>
-        <button 
-          onClick={fetchItineraries}
-          className="retry-button"
-        >
+        <button onClick={loadItineraries} className="retry-button">
           Retry
         </button>
       </div>
@@ -63,26 +70,11 @@ const ItineraryPage = () => {
       </div>
 
       <div className="itinerary-list">
-        {data.length > 0 ? (
-          data.map((itinerary) => (
+        {itineraries.length > 0 ? (
+          itineraries.map((itinerary) => (
             <div key={itinerary._id} className="itinerary-card">
-              <h3>{itinerary.title || 'Untitled Itinerary'}</h3>
-              
-              <div className="date-range">
-                {formatDate(itinerary.startDate)} – {formatDate(itinerary.endDate)}
-              </div>
-
-              {itinerary.description && (
-                <p className="description">{itinerary.description}</p>
-              )}
-
-              <div className="activities-container">
-                {(itinerary.activities || []).map((activity, index) => (
-                  <span key={index} className="activity-tag">
-                    {activity || 'Unknown Activity'}
-                  </span>
-                ))}
-              </div>
+              <h3>{itinerary.title || "Untitled Itinerary"}</h3>
+              <p>{itinerary.description}</p>
             </div>
           ))
         ) : (
