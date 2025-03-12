@@ -1,6 +1,6 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
-const ItineraryContext = createContext();
+const ItineraryContext = createContext(); // ✅ Create Context
 
 export const useItinerary = () => {
   const context = useContext(ItineraryContext);
@@ -10,31 +10,50 @@ export const useItinerary = () => {
   return context;
 };
 
-export const fetchItineraries = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Unauthorized: No token found. Please log in.");
-    }
+export const ItineraryProvider = ({ children }) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/itineraries`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("Session expired. Please log in again.");
+  const fetchItineraries = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Unauthorized: No token found. Please log in.");
       }
-      throw new Error("Failed to fetch itineraries.");
-    }
 
-    return await response.json();
-  } catch (error) {
-    console.error("Fetch error:", error);
-    throw error;
-  }
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/itineraries`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Session expired. Please log in again.");
+        }
+        throw new Error("Failed to fetch itineraries.");
+      }
+
+      const result = await response.json();
+      setData(result);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchItineraries();
+  }, []);
+
+  return (
+    <ItineraryContext.Provider value={{ data, loading, error, fetchItineraries }}>
+      {children}
+    </ItineraryContext.Provider>
+  );
 };
