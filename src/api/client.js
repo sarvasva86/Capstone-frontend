@@ -12,7 +12,6 @@ axiosClient.interceptors.request.use(config => {
   config.headers = {
     ...config.headers,
     'Authorization': `Bearer ${token}`,
-    'X-Request-ID': uuidv4()
   };
   return config;
 });
