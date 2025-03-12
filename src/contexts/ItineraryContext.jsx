@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext } from "react";
 
 const ItineraryContext = createContext();
 
@@ -10,95 +10,31 @@ export const useItinerary = () => {
   return context;
 };
 
-export const ItineraryProvider = ({ children }) => {
-  const [state, setState] = useState({
-    data: [],
-    loading: false,
-    error: null,
-    lastFetched: null
-  });
-
-  const handleError = (error) => {
-    console.error("Itinerary Context Error:", error);
-    setState(prev => ({
-      ...prev,
-      error: error.message,
-      loading: false
-    }));
-    
-    // Auto-logout on 401 Unauthorized
-    if (error.message.includes("401")) {
-      localStorage.removeItem("token");
-      window.location.href = "/login?session_expired=true";
+export const fetchItineraries = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Unauthorized: No token found. Please log in.");
     }
-  };
 
-  const fetchItineraries = async (forceRefresh = false) => {
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("401 - Authentication required");
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/itineraries`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/itineraries`, 
-        {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            "X-Request-ID": crypto.randomUUID() 
-          },
-          cache: forceRefresh ? "reload" : "default"
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || `HTTP ${response.status} - ${response.statusText}`
-        );
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error("Session expired. Please log in again.");
       }
-
-      const result = await response.json();
-      
-      setState({
-        data: result,
-        loading: false,
-        error: null,
-        lastFetched: new Date().toISOString()
-      });
-
-    } catch (err) {
-      handleError(err);
+      throw new Error("Failed to fetch itineraries.");
     }
-  };
 
-  // Add automatic refresh every 5 minutes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (state.lastFetched) {
-        const minutesSinceLastFetch = 
-          (new Date() - new Date(state.lastFetched)) / 60000;
-        if (minutesSinceLastFetch > 5) {
-          fetchItineraries(true);
-        }
-      }
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [state.lastFetched]);
-
-  // Initial fetch
-  useEffect(() => {
-    fetchItineraries();
-  }, []);
-
-  return (
-    <ItineraryContext.Provider value={{
-      ...state,
-      fetchItineraries,
-      retry: () => fetchItineraries(true)
-    }}>
-      {children}
-    </ItineraryContext.Provider>
-  );
+    return await response.json();
+  } catch (error) {
+    console.error("Fetch error:", error);
+    throw error;
+  }
 };
