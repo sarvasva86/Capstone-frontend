@@ -204,3 +204,29 @@
     text-align: center;
   }
 }
+/* ✨ Suggestions Section */
+.suggestions-section {
+  margin-top: 2rem;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+.suggestions-section h2 {
+  color: #2d3436;
+  font-size: 1.8rem;
+}
+
+.suggestion-item {
+  background: #6c5ce7;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.suggestions-section ul {
+  list-style-type: none;
+  padding: 0;
+}
