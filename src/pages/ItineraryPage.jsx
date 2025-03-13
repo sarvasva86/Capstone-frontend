@@ -1,44 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useItinerary } from "../contexts/ItineraryContext";
 import "../styles/ItineraryPage.css";
 
 const ItineraryPage = () => {
-  const [itineraries, setItineraries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { fetchItineraries } = useItinerary();
-
-  const loadItineraries = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authentication required. Please log in again.");
-      }
-
-      const fetchedData = await fetchItineraries();
-      setItineraries(Array.isArray(fetchedData) ? fetchedData : []);
-
-      // ✅ Reset refresh state after saving
-      if (location.state?.shouldRefresh) {
-        navigate(location.pathname, { replace: true, state: {} });
-      }
-    } catch (err) {
-      console.error("Error fetching itineraries:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: itineraries, loading, error, fetchItineraries } = useItinerary();
 
   useEffect(() => {
-    loadItineraries();
-  }, [location.state?.shouldRefresh]); // ✅ Triggers refresh after saving an itinerary
+    fetchItineraries();
+  }, [location.state?.shouldRefresh]); // ✅ Refresh after saving
+
+  // ✅ Handle itinerary deletion
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this itinerary?")) {
+      try {
+        const token = localStorage.getItem("token");
+        await fetch(`${process.env.REACT_APP_API_URL}/api/itineraries/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        fetchItineraries(); // ✅ Refresh after delete
+      } catch (error) {
+        console.error("Delete error:", error);
+        alert("Failed to delete itinerary.");
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -53,7 +44,7 @@ const ItineraryPage = () => {
       <div className="error-container">
         <h2>⚠️ Connection Issue</h2>
         <p>{error}</p>
-        <button onClick={loadItineraries} className="retry-button">
+        <button onClick={fetchItineraries} className="retry-button">
           Retry
         </button>
       </div>
@@ -63,7 +54,7 @@ const ItineraryPage = () => {
   return (
     <div className="itinerary-page">
       <div className="header-section">
-        <h1>My Travel Plans</h1>
+        <h1>🌍 My Travel Plans</h1>
         <Link to="/create-itinerary" className="create-button">
           ＋ New Itinerary
         </Link>
@@ -73,8 +64,15 @@ const ItineraryPage = () => {
         {itineraries.length > 0 ? (
           itineraries.map((itinerary) => (
             <div key={itinerary._id} className="itinerary-card">
-              <h3>{itinerary.title || "Untitled Itinerary"}</h3>
-              <p>{itinerary.description}</p>
+              <img src={`https://source.unsplash.com/600x400/?travel,${itinerary.title}`} alt="Itinerary" />
+              <div className="itinerary-details">
+                <h3>{itinerary.title || "Untitled Itinerary"}</h3>
+                <p>{itinerary.description || "No description available."}</p>
+                <div className="date-range">{itinerary.startDate} - {itinerary.endDate}</div>
+                <div className="buttons">
+                  <button className="delete-btn" onClick={() => handleDelete(itinerary._id)}>🗑 Delete</button>
+                </div>
+              </div>
             </div>
           ))
         ) : (
