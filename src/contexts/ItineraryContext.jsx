@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react"; 
 
 const ItineraryContext = createContext(); // ✅ Create Context
 
@@ -11,17 +11,22 @@ export const useItinerary = () => {
 };
 
 export const ItineraryProvider = ({ children }) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([]); // ✅ Ensures an array as default
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // ✅ Fetch Itineraries with error handling & logging
   const fetchItineraries = async () => {
     setLoading(true);
+    setError(null); // ✅ Reset error before fetching
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("Unauthorized: No token found. Please log in.");
       }
+
+      console.log("Fetching itineraries..."); // ✅ Debugging log
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/itineraries`, {
         method: "GET",
@@ -39,8 +44,12 @@ export const ItineraryProvider = ({ children }) => {
       }
 
       const result = await response.json();
-      setData(result);
+      console.log("Fetched itineraries:", result); // ✅ Debugging log
+
+      setData(Array.isArray(result) ? result : []); // ✅ Prevents errors when mapping
+
     } catch (err) {
+      console.error("Fetch error:", err.message); // ✅ Log error
       setError(err.message);
     } finally {
       setLoading(false);
