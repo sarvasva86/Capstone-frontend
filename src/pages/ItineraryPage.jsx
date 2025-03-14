@@ -6,12 +6,29 @@ import "../styles/ItineraryPage.css";
 const ItineraryPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { data: itineraries, loading, error, fetchItineraries, deleteItinerary } = useItinerary();
+  const { data: itineraries, loading, error, fetchItineraries } = useItinerary();
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
     fetchItineraries();
   }, [location.state?.shouldRefresh]);
+
+  useEffect(() => {
+    if (itineraries.length > 0) {
+      fetchTravelSuggestions();
+    }
+  }, [itineraries]);
+
+  const fetchTravelSuggestions = async () => {
+    const destination = itineraries[0]?.title || "Beach";
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/suggestions?destination=${destination}`);
+      const data = await response.json();
+      setSuggestions(data.suggestions || []);
+    } catch (err) {
+      console.error("Error fetching travel suggestions:", err);
+    }
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "Unknown Date";
@@ -22,19 +39,8 @@ const ItineraryPage = () => {
     });
   };
 
-  // ✅ Handle itinerary deletion
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this itinerary?")) {
-      await deleteItinerary(id);
-    }
-  };
-
   if (loading) {
-    return (
-      <div className="loading-container">
-        <p>Loading your travel plans...</p>
-      </div>
-    );
+    return <div className="loading-container"><p>Loading your travel plans...</p></div>;
   }
 
   if (error) {
@@ -58,16 +64,10 @@ const ItineraryPage = () => {
         {itineraries.length > 0 ? (
           itineraries.map((itinerary) => (
             <div key={itinerary._id} className="itinerary-card">
-              <img src={`https://source.unsplash.com/600x400/?travel,${itinerary.title}`} alt="Itinerary" />
-              <div className="itinerary-details">
-                <h3>{itinerary.title || "🌍 Untitled Itinerary"}</h3>
-                <p>{itinerary.description || "📌 No description available."}</p>
-                <div className="date-range">
-                  {formatDate(itinerary.startDate)} - {formatDate(itinerary.endDate)}
-                </div>
-                <div className="buttons">
-                  <button className="delete-btn" onClick={() => handleDelete(itinerary._id)}>🗑 Delete</button>
-                </div>
+              <h3>{itinerary.title || "🌍 Untitled Itinerary"}</h3>
+              <p>{itinerary.description || "📌 No description available."}</p>
+              <div className="date-range">
+                {formatDate(itinerary.startDate)} - {formatDate(itinerary.endDate)}
               </div>
             </div>
           ))
@@ -76,6 +76,19 @@ const ItineraryPage = () => {
             <p>No adventures planned yet!</p>
             <Link to="/create-itinerary" className="create-button">Plan Your First Trip</Link>
           </div>
+        )}
+      </div>
+
+      <div className="suggestions-section">
+        <h2>🌟 AI Travel Suggestions</h2>
+        {suggestions.length > 0 ? (
+          <ul>
+            {suggestions.map((suggestion, index) => (
+              <li key={index} className="suggestion-item">{suggestion}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No suggestions available right now. Please add your itinerary first!</p>
         )}
       </div>
     </div>
