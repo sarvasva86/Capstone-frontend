@@ -84,6 +84,16 @@ const ItineraryPage = () => {
               <div className="date-range">
                 {formatDate(itinerary.startDate)} - {formatDate(itinerary.endDate)}
               </div>
+
+              {/* ✅ Image Carousel (Travel Images) */}
+      <h2>📸 Destination Preview</h2>
+      <Swiper spaceBetween={10} slidesPerView={1} pagination={{ clickable: true }} navigation>
+        {images.map((img) => (
+          <SwiperSlide key={img.id}>
+            <img src={img.urls.regular} alt={img.alt_description} className="travel-image" />
+          </SwiperSlide>
+        ))}
+      </Swiper>
             </div>
           ))
         ) : (
