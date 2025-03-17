@@ -2,12 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useItinerary } from "../contexts/ItineraryContext";
 import "../styles/ItineraryPage.css";
+import { useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css"; 
 
 const ItineraryPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { data: itineraries, loading, error, fetchItineraries } = useItinerary();
   const [suggestions, setSuggestions] = useState([]);
+  const [images, setImages] = useState([]);
+
 
   useEffect(() => {
     fetchItineraries();
