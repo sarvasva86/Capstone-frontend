@@ -14,6 +14,7 @@ const ItineraryPage = () => {
   }, [location.state?.shouldRefresh]);
 
   useEffect(() => {
+    console.log("Fetched Itineraries:", itineraries);
     if (itineraries.length > 0) {
       fetchTravelSuggestions();
     }
