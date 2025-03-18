@@ -89,7 +89,7 @@ const ItineraryPage = () => {
           itineraries.map((itinerary) => (
             <div key={itinerary._id} className="itinerary-card">
               <h3>{itinerary.title || "🌍 Untitled Itinerary"}</h3>
-              <p>{itinerary.description || "📌 No description available."}</p>
+              <p>{itinerary.description || "📝 Click to add a description for this trip!"}</p>
               <div className="date-range">
                 {formatDate(itinerary.startDate)} - {formatDate(itinerary.endDate)}
               </div>
