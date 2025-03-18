@@ -25,6 +25,7 @@ const ItineraryPage = () => {
     console.log("Fetched Itineraries:", itineraries);
     if (itineraries.length > 0) {
       fetchTravelSuggestions();
+      fetchTravelImages(itineraries[0]?.title || "Beach");
     }
   }, [itineraries]);
 
