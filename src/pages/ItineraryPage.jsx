@@ -95,7 +95,7 @@ const ItineraryPage = () => {
 
               {/* ✅ Image Carousel (Travel Images) */}
       <h2>📸 Destination Preview</h2>
-      <Swiper spaceBetween={10} slidesPerView={1} pagination={{ clickable: true }} navigation>
+      <Swiper spaceBetween={10} slidesPerView={1} pagination={{ clickable: true }} navigation  modules={[Navigation, Pagination]}>
         {images.map((img) => (
           <SwiperSlide key={img.id}>
             <img src={img.urls.regular} alt={img.alt_description} className="travel-image" />
