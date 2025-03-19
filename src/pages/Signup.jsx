@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+
+        import React, { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import "../styles/Signup.css"; // Make sure to create this CSS file
+import { Link, useNavigate } from "react-router-dom"; // ✅ Import useNavigate
+import "../styles/Signup.css";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -9,6 +10,8 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate(); // ✅ React Router navigation
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -19,38 +22,29 @@ const Signup = () => {
       const response = await axios.post(
         "https://capstone-server-aa8j.onrender.com/api/auth/signup",
         { name, email, password },
-        {
-          headers: { "Content-Type": "application/json" },
-          timeout: 10000
-        }
+        { headers: { "Content-Type": "application/json" }, timeout: 10000 }
       );
 
       if (response.data.message === "Signup successful") {
-        setMessage("🎉 Signup successful! Redirecting to login...");
+        setMessage("🎉 Signup successful! Redirecting...");
         setTimeout(() => {
-          window.location.href = "/login"; // Use your actual login route
+          navigate("/login"); // ✅ Correct React Router redirection
         }, 2000);
       }
-    } 
-    catch (error) {
-  let errorMessage = "Signup failed. Please try again.";
-  
-  if (error.code === "ECONNABORTED") {
-    errorMessage = "Request timed out. Check your connection.";
-  } else if (error.request) {
-    errorMessage = "No response from server. The backend might be down.";
-  } else {
-    errorMessage = `Network Error: ${error.message}`;
-  }
-
-  setMessage(`⚠️ ${errorMessage}`);
-  console.error("Full Error Context:", {
-    config: error.config,
-    request: error.request,
-    code: error.code,
-    message: error.message
-  });
-}
+    } catch (error) {
+      let errorMessage = "Signup failed. Please try again.";
+      if (error.code === "ECONNABORTED") {
+        errorMessage = "Request timed out. Check your connection.";
+      } else if (error.request) {
+        errorMessage = "No response from server. The backend might be down.";
+      } else {
+        errorMessage = `Network Error: ${error.message}`;
+      }
+      setMessage(`⚠️ ${errorMessage}`);
+      console.error("Full Error Context:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -96,11 +90,7 @@ const Signup = () => {
           />
         </div>
 
-        <button 
-          type="submit" 
-          className="signup-button"
-          disabled={isLoading}
-        >
+        <button type="submit" className="signup-button" disabled={isLoading}>
           {isLoading ? "Creating Account..." : "Sign Up"}
         </button>
 
