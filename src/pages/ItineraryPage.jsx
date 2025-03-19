@@ -32,23 +32,27 @@ const ItineraryPage = () => {
     }
   }, [itineraries]); // ✅ Dependency updated
 
-  const fetchTravelImages = async (query) => {
-    try {
-      const timestamp = new Date().getTime(); // ✅ Prevents API caching
-      const response = await fetch(
-        `https://api.unsplash.com/search/photos?query=${query} travel&client_id=${process.env.REACT_APP_UNSPLASH_API_KEY}&per_page=5&cacheBust=${timestamp}`
-      );
-      const data = await response.json();
-      
-      if (data.results.length > 0) {
-        setImages(data.results);
-      } else {
-        setImages([]); // Fallback if no images found
-      }
-    } catch (err) {
-      console.error("Error fetching images:", err);
+ const fetchTravelImages = async (query) => {
+  try {
+    const timestamp = new Date().getTime(); // ✅ Prevent API caching
+    const randomPage = Math.floor(Math.random() * 10) + 1; // ✅ Get images from different pages
+
+    const response = await fetch(
+      `https://api.unsplash.com/search/photos?query=${query} travel&client_id=${process.env.REACT_APP_UNSPLASH_API_KEY}&per_page=5&page=${randomPage}&cacheBust=${timestamp}`
+    );
+
+    const data = await response.json();
+    
+    if (data.results.length > 0) {
+      setImages(data.results);
+    } else {
+      setImages([]); // Fallback if no images found
     }
-  };
+  } catch (err) {
+    console.error("Error fetching images:", err);
+  }
+};
+
 
   const fetchTravelSuggestions = async (destination) => {
     try {
