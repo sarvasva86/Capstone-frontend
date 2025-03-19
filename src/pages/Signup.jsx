@@ -1,7 +1,6 @@
-
-        import React, { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom"; // ✅ Import useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/Signup.css";
 
 const Signup = () => {
@@ -11,10 +10,22 @@ const Signup = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const navigate = useNavigate(); // ✅ React Router navigation
+  const navigate = useNavigate();
+
+  // ✅ Password validation function
+  const isValidPassword = (password) => {
+    return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    // ✅ Validate password strength before submitting
+    if (!isValidPassword(password)) {
+      setMessage("⚠️ Password must be at least 8 characters long and include a number and a special character.");
+      return;
+    }
+
     setIsLoading(true);
     setMessage("Creating your account...");
 
@@ -28,7 +39,7 @@ const Signup = () => {
       if (response.data.message === "Signup successful") {
         setMessage("🎉 Signup successful! Redirecting...");
         setTimeout(() => {
-          navigate("/login"); // ✅ Correct React Router redirection
+          navigate("/login"); // ✅ Redirect to login page
         }, 2000);
       }
     } catch (error) {
@@ -82,7 +93,7 @@ const Signup = () => {
           <input
             type="password"
             id="password"
-            placeholder="Create a password"
+            placeholder="Create a strong password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
