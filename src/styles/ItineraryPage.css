@@ -1,12 +1,28 @@
 /* 🌍 General Page Layout */
 .itinerary-page {
-  max-width: 1000px;
+  max-width: 600px;
   margin: 2rem auto;
   padding: 1rem;
   font-family: "Arial", sans-serif;
   color: #2d3436;
 }
+.itinerary-form input,
+.itinerary-form textarea {
+  width: 100%; /* Full width inside form */
+  max-width: 100%; /* Prevent overflow */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
+@media (max-width: 768px) {
+  .itinerary-form input,
+  .itinerary-form textarea {
+    font-size: 14px; /* Reduce size on smaller screens */
+    padding: 8px;
+  }
+}
 /* 🔄 Loading & Error States */
 .loading, .error {
   text-align: center;
