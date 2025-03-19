@@ -33,18 +33,24 @@ const ItineraryPage = () => {
     }
   }, [itineraries]);
 
-
-  const fetchTravelImages = async (query) => {
+const fetchTravelImages = async (query) => {
   try {
+    const randomParam = Math.random().toString(36).substring(7); // ✅ Add randomness
     const response = await fetch(
-      `https://api.unsplash.com/search/photos?query=${query}&client_id=${process.env.REACT_APP_UNSPLASH_API_KEY}&per_page=5`
+      `https://api.unsplash.com/search/photos?query=${query} travel&client_id=${process.env.REACT_APP_UNSPLASH_API_KEY}&per_page=5&random=${randomParam}`
     );
     const data = await response.json();
-    setImages(data.results || []);
+    
+    if (data.results.length > 0) {
+      setImages(data.results);
+    } else {
+      setImages([]); // Fallback if no images found
+    }
   } catch (err) {
     console.error("Error fetching images:", err);
   }
 };
+
 
 
   const fetchTravelSuggestions = async () => {
