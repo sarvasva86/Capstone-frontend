@@ -16,7 +16,16 @@ const ItineraryList = () => {
     fetchItineraries();
   }, []);
 
-  return (
+
+  {itineraries.map((itinerary) => (
+  <div key={itinerary._id} className="itinerary-card">
+    <h3>{itinerary.title}</h3>
+    <button onClick={() => handleEdit(itinerary._id)}>✏️ Edit</button>  // ✅ Edit button
+  </div>
+))}
+
+
+   return (
     <div className="itinerary-container">
       <h2>Your Itineraries</h2>
       <ul className="itinerary-list">
