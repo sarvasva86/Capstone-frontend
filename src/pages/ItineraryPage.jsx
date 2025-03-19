@@ -15,6 +15,10 @@ const ItineraryPage = () => {
   const { data: itineraries, loading, error, fetchItineraries } = useItinerary();
   const [suggestions, setSuggestions] = useState([]);
   const [images, setImages] = useState([]);
+  const handleEdit = (id) => {
+  navigate(`/edit-itinerary/${id}`); // ✅ Redirect to edit page
+};
+
 
 
   useEffect(() => {
