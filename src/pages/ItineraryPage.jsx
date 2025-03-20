@@ -13,7 +13,7 @@ const ItineraryPage = () => {
   const navigate = useNavigate();
   const { data: itineraries, loading, error, fetchItineraries } = useItinerary();
   const [suggestions, setSuggestions] = useState([]);
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState({});
 
   const handleEdit = (id) => {
     navigate(`/edit-itinerary/${id}`);
@@ -23,35 +23,32 @@ const ItineraryPage = () => {
     fetchItineraries();
   }, [location.state?.shouldRefresh]);
 
-  useEffect(() => {
-    console.log("Fetched Itineraries:", itineraries);
-    if (itineraries.length > 0) {
-      const destination = itineraries[0]?.title || "Beach";
-      fetchTravelSuggestions(destination);
-      fetchTravelImages(destination); // ✅ Call with correct variable
-    }
-  }, [itineraries]); // ✅ Dependency updated
-
- const fetchTravelImages = async (query) => {
+useEffect(() => {
+  itineraries.forEach((itinerary) => {
+    fetchTravelSuggestions(itinerary.title);
+    fetchTravelImages(itinerary.title, itinerary._id);
+  });
+}, [itineraries]);
+const fetchTravelImages = async (query, itineraryId) => {
   try {
-    const timestamp = new Date().getTime(); // ✅ Prevent API caching
-    const randomPage = Math.floor(Math.random() * 10) + 1; // ✅ Get images from different pages
+    const timestamp = new Date().getTime(); // Prevent API caching
+    const randomPage = Math.floor(Math.random() * 10) + 1;
 
     const response = await fetch(
       `https://api.unsplash.com/search/photos?query=${query} travel&client_id=${process.env.REACT_APP_UNSPLASH_API_KEY}&per_page=5&page=${randomPage}&cacheBust=${timestamp}`
     );
 
     const data = await response.json();
-    
-    if (data.results.length > 0) {
-      setImages(data.results);
-    } else {
-      setImages([]); // Fallback if no images found
-    }
+
+    setImages((prevImages) => ({
+      ...prevImages,
+      [itineraryId]: data.results.length > 0 ? data.results : [], // Store images per itinerary
+    }));
   } catch (err) {
     console.error("Error fetching images:", err);
   }
 };
+
 
 
   const fetchTravelSuggestions = async (destination) => {
@@ -107,18 +104,18 @@ const ItineraryPage = () => {
               {/* ✅ Image Carousel (Travel Images) */}
               <h2>📸 Destination Preview</h2>
               <Swiper spaceBetween={10} slidesPerView={1} pagination={{ clickable: true }} navigation modules={[Navigation, Pagination]}>
-                {images.length > 0 ? (
-                  images.map((img) => (
-                    <SwiperSlide key={img.id}>
-                      <img src={img.urls.regular} alt={img.alt_description} className="travel-image" />
-                    </SwiperSlide>
-                  ))
-                ) : (
-                  <SwiperSlide>
-                    <p>No images found for this destination.</p>
-                  </SwiperSlide>
-                )}
-              </Swiper>
+  {images[itinerary._id]?.length > 0 ? (
+    images[itinerary._id].map((img) => (
+      <SwiperSlide key={img.id}>
+        <img src={img.urls.regular} alt={img.alt_description} className="travel-image" />
+      </SwiperSlide>
+    ))
+  ) : (
+    <SwiperSlide>
+      <p>No images found for this destination.</p>
+    </SwiperSlide>
+  )}
+</Swiper>
             </div>
           ))
         ) : (
